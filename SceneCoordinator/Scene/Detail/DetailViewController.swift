@@ -6,10 +6,21 @@
 //
 
 import UIKit
+import Combine
 
 final class DetailViewController: UIViewController {
     
+    private let numberLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .black
+        label.backgroundColor = .white
+        label.font = .systemFont(ofSize: 30, weight: .bold)
+        return label
+    }()
+
     private let viewModel: DetailViewModel
+    private var cancellables = Set<AnyCancellable>()
     
     init(viewModel: DetailViewModel) {
         self.viewModel = viewModel
@@ -29,6 +40,7 @@ final class DetailViewController: UIViewController {
         super.viewDidLoad()
         
         setupViews()
+        bindViewModel()
     }
     
     private func setupViews() {
@@ -38,6 +50,22 @@ final class DetailViewController: UIViewController {
                                                            style: .plain,
                                                            target: self,
                                                            action: #selector(didTapBack))
+        
+        view.addSubview(numberLabel)
+        NSLayoutConstraint.activate([
+            numberLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            numberLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            numberLabel.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func bindViewModel() {
+        viewModel.number
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.numberLabel.text = "\(value)"
+            }
+            .store(in: &cancellables)
     }
     
     @objc private func didTapBack() {

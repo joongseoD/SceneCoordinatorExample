@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 final class HomeViewController: UIViewController {
     
@@ -17,6 +18,7 @@ final class HomeViewController: UIViewController {
         return button
     }()
     
+    private var cancellables = Set<AnyCancellable>()
     private let viewModel: HomeViewModel
     
     init(viewModel: HomeViewModel) {
@@ -37,6 +39,7 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         setupViews()
+        bindViewModel()
     }
     
     private func setupViews() {
@@ -48,6 +51,15 @@ final class HomeViewController: UIViewController {
             nextButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             nextButton.heightAnchor.constraint(equalToConstant: 70)
         ])
+    }
+    
+    private func bindViewModel() {
+        viewModel.buttonTitle
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.nextButton.setTitle(value, for: .normal)
+            }
+            .store(in: &cancellables)
     }
     
     @objc private func didTapNext() {

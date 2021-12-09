@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Combine
 
 final class AppCoordinator: Coordinator {
     
@@ -25,13 +26,13 @@ final class AppCoordinator: Coordinator {
         let navigationController = UINavigationController()
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
-        let homeCoordinator = HomeCoordinator(dependency: AppComponent(),
-                                              navigationController: navigationController)
+        
+        let homeCoordinator = HomeCoordinator(dependency: AppComponent(), navigationController: navigationController)
         homeCoordinator.start()
         childCoordinators.append(homeCoordinator)
     }
 }
 
 final class AppComponent: HomeDependency {
-    
+    var receivedMessage = CurrentValueSubject<String, Never>("Next")
 }

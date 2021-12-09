@@ -33,11 +33,13 @@ final class DetailCoordinator: Coordinator {
 }
 
 extension DetailCoordinator: DetailListener {
-    func didTapBack() {
+    func didTapBack(with message: String) {
+        parent?.deliverMessage(message)
         parent?.detachDetail()
     }
 }
 
 protocol DetailCoordinatorListener where Self: Coordinator {
+    func deliverMessage(_ message: String)
     func detachDetail()
 }
